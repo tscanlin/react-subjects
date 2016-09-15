@@ -23,20 +23,56 @@ const ListView = React.createClass({
     renderRowAtIndex: PropTypes.func.isRequired
   },
 
+  getInitialState() {
+    return {
+        containerHeight: 0,
+        containerScroll: 0
+    }
+  },
+
+  // tall window, scrollTop
+
+  componentDidMount() {
+      this.getContainerHeight()
+  },
+
+  getContainerHeight() {
+    this.setState({ containerHeight: findDOMNode(this).clientHeight })
+  },
+
+  itemsToRender() {
+    return Math.floor(this.state.containerHeight / this.props.rowHeight) + 1
+  },
+
+  onScroll(e) {
+    //   console.log(e.target.scrollTop);
+      this.setState({ containerScroll: e.target.scrollTop })
+  },
+
   render() {
     const { numRows, rowHeight, renderRowAtIndex } = this.props
     const totalHeight = numRows * rowHeight
 
     const items = []
 
+    // console.log(this.itemsToRender());
     let index = 0
-    while (index < numRows) {
-      items.push(<li key={index}>{renderRowAtIndex(index)}</li>)
+    const startIndex = Math.floor(this.state.containerScroll / rowHeight)
+    const offset = 5
+    // console.log(index);
+    while (index < 500) {
+        if (index >= startIndex - offset && index <= startIndex + this.itemsToRender() + offset) {
+            items.push(<li key={index} style={{
+                position: 'absolute',
+                top: index * rowHeight
+            }}>{renderRowAtIndex(index)}</li>)
+        }
       index++
     }
 
     return (
-      <div style={{ height: '100%', overflowY: 'scroll' }}>
+      <div style={{ height: '100%', overflowY: 'scroll', position: 'relative' }}
+        onScroll={this.onScroll}>
         <ol style={{ height: totalHeight }}>
           {items}
         </ol>

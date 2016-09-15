@@ -16,6 +16,7 @@ const withMousePosition = (Component) => {
     },
 
     handleMouseMove(event) {
+      console.log(event);
       this.setState({
         x: event.clientX,
         y: event.clientY
@@ -55,4 +56,3 @@ const App = React.createClass({
 const AppWithMouse = withMousePosition(App)
 
 render(<AppWithMouse/>, document.getElementById('app'))
-

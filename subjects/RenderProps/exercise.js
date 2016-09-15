@@ -18,16 +18,23 @@
 //   `utils/githubSearch` that uses a render prop to pass its data back up
 ////////////////////////////////////////////////////////////////////////////////
 import React from 'react'
-import { render } from 'react-dom'
+import { render, findDOMNode } from 'react-dom'
 import { listen } from './utils/log'
+
+const CONTAINER_STYLE = {
+    height: 400,
+    overflowY: 'scroll',
+    border: '1px solid'
+}
 
 const Tail = React.createClass({
   render() {
     const { lines } = this.props
+    const limitedLines = lines.slice(-(this.props.lineLimit))
 
     return (
       <ul>
-        {lines.map((line, index) => (
+        {limitedLines.map((line, index) => (
           <li key={index}>{line}</li>
         ))}
       </ul>
@@ -35,10 +42,28 @@ const Tail = React.createClass({
   }
 })
 
+const PinnedToBottom = React.createClass({
+    componentDidMount() {
+        
+    },
+  componentDidUpdate(nextProps) {
+      const node = findDOMNode(this)
+      node.scrollTop = node.scrollHeight
+  },
+  render() {
+    return (
+      <div style={CONTAINER_STYLE}>
+        {this.props.children}
+      </div>
+    )
+  }
+})
+
 const App = React.createClass({
   getInitialState() {
     return {
-      lines: []
+      lines: [],
+      lineLimit: 20
     }
   },
 
@@ -54,9 +79,9 @@ const App = React.createClass({
     return (
       <div>
         <h1>Heads up Eggman, here comes <code>&lt;Tails&gt;</code>s!</h1>
-        <div style={{ height: 400, overflowY: 'scroll', border: '1px solid' }}>
-          <Tail lines={this.state.lines}/>
-        </div>
+        <PinnedToBottom watchData={this.state.lines}>
+          <Tail lines={this.state.lines} lineLimit={this.state.lineLimit}/>
+        </PinnedToBottom>
       </div>
     )
   }

@@ -17,25 +17,52 @@
 // - Implement a <ResetButton> that resets the <TextInput>s in the form
 //
 ////////////////////////////////////////////////////////////////////////////////
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { render } from 'react-dom'
 
 const Form = React.createClass({
+childContextTypes: {
+  form: PropTypes.shape({
+      onSubmit: PropTypes.func
+  })
+},
+  getChildContext() {
+    return {
+        form: {
+            onSubmit: (e) => { this.props.onSubmit(e) }
+        }
+    }
+  },
   render() {
     return <div>{this.props.children}</div>
   }
 })
 
 const SubmitButton = React.createClass({
+  contextTypes: {
+    form: PropTypes.shape({
+        onSubmit: PropTypes.func
+    })
+  },
   render() {
-    return <button>{this.props.children}</button>
+    return <button onClick={() => {this.context.form.onSubmit()}}>{this.props.children}</button>
   }
 })
 
 const TextInput = React.createClass({
+    contextTypes: {
+      form: PropTypes.shape({
+          onSubmit: PropTypes.func
+      })
+    },
   render() {
     return (
       <input
+        onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+                this.context.form.onSubmit()
+            }
+        }}
         type="text"
         name={this.props.name}
         placeholder={this.props.placeholder}

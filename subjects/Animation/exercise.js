@@ -85,13 +85,22 @@ const DropGrid = React.createClass({
 
     return (
       <div className="grid">
-        <Draggable
-          className="marker"
-          style={markerStyle}
-          onDragStart={this.handleDragStart}
-          onDrag={this.handleDrag}
-          onDrop={this.handleDrop}
-        />
+        <Motion style={{
+            left: spring(markerStyle.left),
+            top: spring(markerStyle.top)
+        }}>
+            {style => {
+                return (
+                    <Draggable
+                        className="marker"
+                        style={style}
+                        onDragStart={this.handleDragStart}
+                        onDrag={this.handleDrag}
+                        onDrop={this.handleDrop}
+                    />
+                )
+            }}
+        </Motion>
         <div className="cell">1</div>
         <div className="cell">2</div>
         <div className="cell">3</div>

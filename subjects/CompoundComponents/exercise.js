@@ -37,8 +37,27 @@ const RadioGroup = React.createClass({
     defaultValue: PropTypes.string
   },
 
+  getInitialState() {
+    return {
+      value: this.props.defaultValue
+    }
+  },
+
+  select(value) {
+    this.setState({ value }, () => {
+      this.props.onChange(this.state.value)
+    })
+  },
+
   render() {
-    return <div>{this.props.children}</div>
+      const children = React.Children.map(this.props.children, (child) => (
+        React.cloneElement(child, {
+          isSelected: child.props.value === this.state.value,
+          onClick: () => this.select(child.props.value)
+        })
+      ))
+
+      return <div>{children}</div>
   }
 })
 
@@ -49,8 +68,8 @@ const RadioOption = React.createClass({
 
   render() {
     return (
-      <div>
-        <RadioIcon isSelected={false}/> {this.props.children}
+      <div onClick={this.props.onClick}>
+        <RadioIcon isSelected={this.props.isSelected}/> {this.props.children}
       </div>
     )
   }
@@ -80,12 +99,27 @@ const RadioIcon = React.createClass({
 })
 
 const App = React.createClass({
+    getDefaultProps() {
+        return {
+            defaultValue: 'fm'
+        }
+    },
+
+    getInitialState() {
+      return {
+        currentValue: this.props.defaultValue
+      }
+    },
+
   render() {
     return (
       <div>
         <h1>♬ It's about time that we all turned off the radio ♫</h1>
 
-        <RadioGroup defaultValue="fm">
+        <div>Current value: {this.state.currentValue}</div>
+
+        <RadioGroup defaultValue={this.state.currentValue}
+          onChange={(currentValue) => { this.setState({ currentValue }) }}>
           <RadioOption value="am">AM</RadioOption>
           <RadioOption value="fm">FM</RadioOption>
           <RadioOption value="tape">Tape</RadioOption>

@@ -17,6 +17,40 @@ const Select = React.createClass({
     defaultValue: any
   },
 
+  childContextTypes: {
+      select: PropTypes.shape({
+          currentValue: any,
+          onChange: any
+      })
+  },
+
+  getDefaultProps() {
+    return {
+        onChange: (currentValue) => {
+            this.setState({ currentValue })
+        }
+    }
+  },
+
+  getChildContext() {
+    return {
+        select: {
+            currentValue: this.props.value,
+            onChange: this.props.onChange
+        }
+    }
+  },
+
+  getInitialState() {
+    return {
+        currentValue: this.props.defaultValue
+    }
+  },
+
+  isUncontrolled() {
+    return this.props.value == null
+  },
+
   render() {
     return (
       <div className="select">
@@ -31,9 +65,18 @@ const Select = React.createClass({
 
 
 const Option = React.createClass({
+  contextTypes: {
+      select: PropTypes.shape({
+          currentValue: any,
+          onChange: any
+      })
+  },
   render() {
     return (
-      <div className="option">{this.props.children}</div>
+      <div className="option" onClick={() => { this.context.select.onChange(this.props.value) } } style={{
+          fontWeight: this.props.value === this.context.select.currentValue
+            ? 'bold' : 'normal' }}
+        >{this.props.children}</div>
     )
   }
 })

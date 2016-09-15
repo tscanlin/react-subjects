@@ -11,6 +11,7 @@ const App = React.createClass({
   },
 
   render() {
+    //   console.log(this.context);
     return (
       <div>
         <h1>Mini Redux!</h1>
